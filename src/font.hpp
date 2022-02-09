@@ -1,0 +1,1 @@
+void drawSyllable(char *s);
