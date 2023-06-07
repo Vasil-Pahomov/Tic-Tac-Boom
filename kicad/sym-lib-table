@@ -1,3 +1,4 @@
 (sym_lib_table
-  (lib (name OLEDBomb-rescue)(type Legacy)(uri ${KIPRJMOD}/OLEDBomb-rescue.lib)(options "")(descr ""))
+  (version 7)
+  (lib (name "OLEDBomb-rescue")(type "KiCad")(uri "${KIPRJMOD}/OLEDBomb-rescue.kicad_sym")(options "")(descr ""))
 )
