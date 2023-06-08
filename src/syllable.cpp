@@ -225,12 +225,30 @@ const char syl_eng_107[] PROGMEM = "ALL";
 const char syl_eng_108[] PROGMEM = "EE";
 const char *const syl_eng_table[] PROGMEM = { syl_eng_0,syl_eng_1,syl_eng_2,syl_eng_3,syl_eng_4,syl_eng_5,syl_eng_6,syl_eng_7,syl_eng_8,syl_eng_9,syl_eng_10,syl_eng_11,syl_eng_12,syl_eng_13,syl_eng_14,syl_eng_15,syl_eng_16,syl_eng_17,syl_eng_18,syl_eng_19,syl_eng_20,syl_eng_21,syl_eng_22,syl_eng_23,syl_eng_24,syl_eng_25,syl_eng_26,syl_eng_27,syl_eng_28,syl_eng_29,syl_eng_30,syl_eng_31,syl_eng_32,syl_eng_33,syl_eng_34,syl_eng_35,syl_eng_36,syl_eng_37,syl_eng_38,syl_eng_39,syl_eng_40,syl_eng_41,syl_eng_42,syl_eng_43,syl_eng_44,syl_eng_45,syl_eng_46,syl_eng_47,syl_eng_48,syl_eng_49,syl_eng_50,syl_eng_51,syl_eng_52,syl_eng_53,syl_eng_54,syl_eng_55,syl_eng_56,syl_eng_57,syl_eng_58,syl_eng_59,syl_eng_60,syl_eng_61,syl_eng_62,syl_eng_63,syl_eng_64,syl_eng_65,syl_eng_66,syl_eng_67,syl_eng_68,syl_eng_69,syl_eng_70,syl_eng_71,syl_eng_72,syl_eng_73,syl_eng_74,syl_eng_75,syl_eng_76,syl_eng_77,syl_eng_78,syl_eng_79,syl_eng_80,syl_eng_81,syl_eng_82,syl_eng_83,syl_eng_84,syl_eng_85,syl_eng_86,syl_eng_87,syl_eng_88,syl_eng_89,syl_eng_90,syl_eng_91,syl_eng_92,syl_eng_93,syl_eng_94,syl_eng_95,syl_eng_96,syl_eng_97,syl_eng_98,syl_eng_99,syl_eng_100,syl_eng_101,syl_eng_102,syl_eng_103,syl_eng_104,syl_eng_105,syl_eng_106,syl_eng_107,syl_eng_108 };
 
+byte usedSyls[150];
+byte usedSylsCount = 0;
 
 void drawRandomSyllable() {
     char buf[10];
     char *cp;
     const char *const *syl_table = (EEPROM.read(0)) ? syl_rus_table : syl_eng_table;
-    int sylind = random(((EEPROM.read(0)) ? sizeof(syl_rus_table) : sizeof(syl_eng_table)) /sizeof(char*));
+    int sylind;
+    int maxsylind = ((EEPROM.read(0)) ? sizeof(syl_rus_table) : sizeof(syl_eng_table)) /sizeof(char*);
+    do {
+        sylind = random(maxsylind);
+        //Serial.print('!');Serial.print(sylind);Serial.print(' ');
+        byte i=0;
+        while (i<usedSylsCount) {
+            if (usedSyls[i] == sylind) break;
+            i++;
+        }
+        if (i >= usedSylsCount) break;
+    } while (true);
+    Serial.print(sylind);Serial.print(' ');Serial.println(usedSylsCount);
+    usedSyls[usedSylsCount-1] = sylind;
+    usedSylsCount++;
+    if (usedSylsCount >= maxsylind) usedSylsCount = 0;//reset once all played
+
     switch ( EEPROM.read(3) ? random(3) : 100) {
         case 0:
             //ellipsis at the end

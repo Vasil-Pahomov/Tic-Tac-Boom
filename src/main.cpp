@@ -30,6 +30,8 @@ U8G2_SH1106_128X64_NONAME_1_4W_HW_SPI u8g2(U8G2_R0, /* cs=*/ 10, /* dc=*/ 8, /* 
 bool locked = false;
 unsigned long startMs;
 
+extern byte usedSylsCount; //bad way to share data between files...
+
 void initAwake() {
   ADCSRA |= (1 << ADEN); // Turn ADC back on
 
@@ -88,6 +90,7 @@ bool checkEnterLockMode() {
     drawLock(u8g2);
     delay(500);
     locked = true;
+    usedSylsCount = 0;
     return true;
   } else {
     return false;
@@ -209,6 +212,9 @@ void editSettings() {
     if ( (millis() - lastms) > SETTINGS_LONG_PRESS ) { // long press - change setting value and do NOT advance to the next
       EEPROM.update(item, normalizeSetting(item, EEPROM.read(item)+1));
       currentSettingBeingChanged = true;
+      if (item == 0) { //a hack to reset used syllables when changing the language
+            usedSylsCount = 0;
+      }
     } else {
       //short press here - advance to the next setting if current setting is not being changed
       if (!currentSettingBeingChanged) {
