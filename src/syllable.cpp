@@ -244,7 +244,7 @@ void drawRandomSyllable() {
         }
         if (i >= usedSylsCount) break;
     } while (true);
-    Serial.print(sylind);Serial.print(' ');Serial.println(usedSylsCount);
+    //Serial.print(sylind);Serial.print(' ');Serial.println(usedSylsCount);
     usedSyls[usedSylsCount-1] = sylind;
     usedSylsCount++;
     if (usedSylsCount >= maxsylind) usedSylsCount = 0;//reset once all played

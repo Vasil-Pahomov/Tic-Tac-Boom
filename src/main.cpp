@@ -278,11 +278,13 @@ void processTimer() {
 
 void processBomb() {
   int startFreq = 440;
-  digitalWrite(LED_PIN, HIGH);
   drawBomb(u8g2);
   while (!digitalRead(BUTTON_PIN) && (startFreq < BOMB_INIT_MAX_FREQ)) {
+      digitalWrite(LED_PIN, HIGH);
       tone(SOUND_PIN,startFreq,50);
-      for (int i=0;i<100;i++) {
+      delay(50);
+      digitalWrite(LED_PIN, LOW);
+      for (int i=0;i<50;i++) {
         random();
         if (digitalRead(BUTTON_PIN)) break;
         delay(1);
