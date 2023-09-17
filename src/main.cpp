@@ -100,7 +100,7 @@ bool checkEnterLockMode() {
 byte normalizeSetting(byte item, byte value) {
   switch (item) {
     case 0: // language
-      return value > 1 ? 0 : value;
+      return value > 2 ? 0 : value;
     case 1: // team size
       return value > 1 ? 0 : value;
     case 2: // timer value
@@ -121,6 +121,9 @@ void displaySetting(byte item, byte value) {
           break;
         case 1: // russian
           drawSyllable("пся");
+          break;
+        case 2: // belarussian
+          drawSyllable("аек");
           break;
         default:
           drawSyllable("0 ");
