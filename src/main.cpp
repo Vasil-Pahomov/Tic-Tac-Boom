@@ -57,10 +57,6 @@ void initAwake() {
   u8g2.setBusClock(1500000);
 }
 
-void setup(void)
-{
-  Serial.begin(38400);
-}
 
 void boomSound() {
   digitalWrite(VIBRO_PIN,HIGH);
@@ -77,15 +73,15 @@ bool checkEnterLockMode() {
   //if the button is hold (after being released) and less than 1 seconds left since start, we may try entering lock mode
   if ( (millis() - startMs < 1000) && !digitalRead(BUTTON_PIN)) {
     drawUnlock(u8g2);
-    while (!digitalRead(BUTTON_PIN) && (millis() - startMs < 3500));//wait until button released
+    while (!digitalRead(BUTTON_PIN) && (millis() - startMs < 1100));//wait until button released
     delay(50);
-    while (digitalRead(BUTTON_PIN) && (millis() - startMs < 3500));//wait until button pressed
+    while (digitalRead(BUTTON_PIN) && (millis() - startMs < 1100));//wait until button pressed
+    if (millis() - startMs > 1000) return true; // too much between presses - no lock
+    delay(50);
+    while (!digitalRead(BUTTON_PIN) && (millis() - startMs < 2100));//wait until button released
+    delay(50);
+    while (digitalRead(BUTTON_PIN) && (millis() - startMs < 2100));//wait until button pressed
     if (millis() - startMs > 2000) return true; // too much between presses - no lock
-    delay(50);
-    while (!digitalRead(BUTTON_PIN) && (millis() - startMs < 3500));//wait until button released
-    delay(50);
-    while (digitalRead(BUTTON_PIN) && (millis() - startMs < 3500));//wait until button pressed
-    if (millis() - startMs > 3000) return true; // too much between presses - no lock
     tone(SOUND_PIN, 200, 100);
     drawLock(u8g2);
     delay(500);
@@ -365,17 +361,17 @@ void displayBatt() {
 
 void checkLeaveLockMode() {
   drawLock(u8g2);
-  while (!digitalRead(BUTTON_PIN) && (millis() - startMs < 3500));//wait until button released
+  while (!digitalRead(BUTTON_PIN) && (millis() - startMs < 1100));//wait until button released
   delay(50);
-  while (digitalRead(BUTTON_PIN) && (millis() - startMs < 3500));//wait until button pressed
+  while (digitalRead(BUTTON_PIN) && (millis() - startMs < 1100));//wait until button pressed
   if (millis() - startMs > 1000) return; // too much between presses - no unlock
   delay(50);
-  while (!digitalRead(BUTTON_PIN) && (millis() - startMs < 3500));//wait until button released
+  while (!digitalRead(BUTTON_PIN) && (millis() - startMs < 2100));//wait until button released
   delay(50);
-  while (digitalRead(BUTTON_PIN) && (millis() - startMs < 3500));//wait until button pressed
+  while (digitalRead(BUTTON_PIN) && (millis() - startMs < 2100));//wait until button pressed
   if (millis() - startMs > 2000) return; // too much between presses - no unlock
   delay(50);
-  while (!digitalRead(BUTTON_PIN) && (millis() - startMs < 3500));//wait until button released
+  while (!digitalRead(BUTTON_PIN) && (millis() - startMs < 3100));//wait until button released
   if (millis() - startMs > 3000) return; // too much between presses - no unlock
   tone(SOUND_PIN, 400, 100);
   drawUnlock(u8g2);
@@ -383,14 +379,22 @@ void checkLeaveLockMode() {
   delay(500);
 }
 
+void setup(void)
+{
+  Serial.begin(38400);
+  sleepUntilButtonPress();
+}
+
 void loop(void)
 {
-  sleepUntilButtonPress();
-  startMs = millis();
   initAwake();
+
+  startMs = millis();
+  digitalWrite(LED_PIN, HIGH);
 
   if (locked) {
     checkLeaveLockMode();
+    sleepUntilButtonPress();
     return;
   }
   //wait 500ms until button released
@@ -417,4 +421,9 @@ void loop(void)
     tone(SOUND_PIN, 1000, 300);
     delay(2000);
   }
+
+  if (digitalRead(BUTTON_PIN)) {
+    sleepUntilButtonPress();
+  }
+
 }
